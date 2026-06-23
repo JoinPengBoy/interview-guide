@@ -23,7 +23,7 @@ name: CI/CD Pipeline
 # ==================== 触发规则 ====================
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
     branches: [ main ]
   # 手动触发：点一下 GitHub 页面上的 "Run workflow" 按钮就能跑
