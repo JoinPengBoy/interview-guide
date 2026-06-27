@@ -1,5 +1,6 @@
 package interview.guide.modules.knowledgebase.service;
 
+import interview.guide.common.auth.CurrentUser;
 import interview.guide.common.exception.BusinessException;
 import interview.guide.common.exception.ErrorCode;
 import interview.guide.modules.knowledgebase.model.KnowledgeBaseEntity;
@@ -67,6 +68,7 @@ public class KnowledgeBasePersistenceService {
             kb.setContentType(file.getContentType());
             kb.setStorageKey(storageKey);
             kb.setStorageUrl(storageUrl);
+            kb.setUserId(CurrentUser.getUserId()); // 关联当前登录用户
 
             KnowledgeBaseEntity saved = knowledgeBaseRepository.save(kb);
             log.info("知识库已保存: id={}, name={}, category={}, hash={}", saved.getId(), saved.getName(), saved.getCategory(), fileHash);

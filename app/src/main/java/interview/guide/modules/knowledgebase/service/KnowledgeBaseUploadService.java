@@ -1,5 +1,6 @@
 package interview.guide.modules.knowledgebase.service;
 
+import interview.guide.common.auth.CurrentUser;
 import interview.guide.common.exception.BusinessException;
 import interview.guide.common.exception.ErrorCode;
 import interview.guide.infrastructure.file.FileHashService;
@@ -122,6 +123,10 @@ public class KnowledgeBaseUploadService {
      */
     public void revectorize(Long kbId) {
         KnowledgeBaseEntity kb = knowledgeBaseRepository.findById(kbId)
+            .filter(k -> {
+                Long userId = CurrentUser.getUserId();
+                return userId == null || k.getUserId() == null || k.getUserId().equals(userId);
+            })
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "知识库不存在"));
 
         log.info("开始重新向量化知识库: kbId={}, name={}", kbId, kb.getName());

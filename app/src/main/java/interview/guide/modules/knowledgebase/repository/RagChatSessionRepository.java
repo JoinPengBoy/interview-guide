@@ -27,6 +27,12 @@ public interface RagChatSessionRepository extends JpaRepository<RagChatSessionEn
     List<RagChatSessionEntity> findAllByOrderByUpdatedAtDesc();
 
     /**
+     * 获取当前用户的会话（按置顶状态和更新时间排序）
+     */
+    @Query("SELECT s FROM RagChatSessionEntity s WHERE s.userId = :userId ORDER BY s.isPinned DESC, s.updatedAt DESC")
+    List<RagChatSessionEntity> findByUserIdOrderByPinnedAndUpdatedAtDesc(@Param("userId") Long userId);
+
+    /**
      * 获取所有会话（按置顶状态和更新时间排序：置顶的在前，然后按更新时间倒序）
      */
     @Query("SELECT s FROM RagChatSessionEntity s ORDER BY s.isPinned DESC, s.updatedAt DESC")

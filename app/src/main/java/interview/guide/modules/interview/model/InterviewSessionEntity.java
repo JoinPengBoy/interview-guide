@@ -214,10 +214,11 @@ public class InterviewSessionEntity {
     public String getReferenceAnswersJson() {
         return referenceAnswersJson;
     }
-    
+
     public void setReferenceAnswersJson(String referenceAnswersJson) {
         this.referenceAnswersJson = referenceAnswersJson;
     }
+
     
     public List<InterviewAnswerEntity> getAnswers() {
         return answers;

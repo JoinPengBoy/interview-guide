@@ -143,6 +143,9 @@ export default function Interview({
         }
       }
       setMessages(restoredMessages);
+    } else {
+      // 防御：后端未返回题目，提示用户重试
+      setError('题目生成失败，请返回重试');
     }
   };
 
@@ -238,7 +241,22 @@ export default function Interview({
     );
   }
 
-  if (!session || !currentQuestion) return null;
+  if (!session) return null;
+  if (!currentQuestion) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="text-center">
+          <p className="text-slate-500 dark:text-slate-400 mb-4">面试题目加载中...</p>
+          <button
+            onClick={onBack}
+            className="px-5 py-2 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-300"
+          >
+            返回
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="pb-10">

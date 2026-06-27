@@ -27,6 +27,54 @@ public interface KnowledgeBaseRepository extends JpaRepository<KnowledgeBaseEnti
      */
     boolean existsByFileHash(String fileHash);
 
+    // ==================== 用户隔离查询方法 ====================
+
+    /**
+     * 按上传时间倒序查找当前用户的知识库
+     */
+    List<KnowledgeBaseEntity> findByUserIdOrderByUploadedAtDesc(Long userId);
+
+    /**
+     * 按向量化状态查找当前用户的知识库
+     */
+    List<KnowledgeBaseEntity> findByVectorStatusAndUserIdOrderByUploadedAtDesc(VectorStatus vectorStatus, Long userId);
+
+    /**
+     * 根据分类查找当前用户的知识库
+     */
+    List<KnowledgeBaseEntity> findByCategoryAndUserIdOrderByUploadedAtDesc(String category, Long userId);
+
+    /**
+     * 查找当前用户的未分类知识库
+     */
+    List<KnowledgeBaseEntity> findByCategoryIsNullAndUserIdOrderByUploadedAtDesc(Long userId);
+
+    /**
+     * 获取当前用户的所有不同分类
+     */
+    @Query("SELECT DISTINCT k.category FROM KnowledgeBaseEntity k WHERE k.userId = :userId AND k.category IS NOT NULL ORDER BY k.category")
+    List<String> findAllCategoriesByUserId(@Param("userId") Long userId);
+
+    /**
+     * 按名称或文件名模糊搜索当前用户的知识库
+     */
+    @Query("SELECT k FROM KnowledgeBaseEntity k WHERE k.userId = :userId AND (LOWER(k.name) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(k.originalFilename) LIKE LOWER(CONCAT('%', :keyword, '%'))) ORDER BY k.uploadedAt DESC")
+    List<KnowledgeBaseEntity> searchByKeywordAndUserId(@Param("keyword") String keyword, @Param("userId") Long userId);
+
+    // ==================== 统计查询（用户隔离） ====================
+
+    @Query("SELECT COALESCE(SUM(k.questionCount), 0) FROM KnowledgeBaseEntity k WHERE k.userId = :userId")
+    long sumQuestionCountByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COALESCE(SUM(k.accessCount), 0) FROM KnowledgeBaseEntity k WHERE k.userId = :userId")
+    long sumAccessCountByUserId(@Param("userId") Long userId);
+
+    long countByUserId(Long userId);
+
+    long countByVectorStatusAndUserId(VectorStatus vectorStatus, Long userId);
+
+    // ==================== 旧方法（保留兼容，可能被其他地方调用） ====================
+
     /**
      * 按上传时间倒序查找所有知识库
      */

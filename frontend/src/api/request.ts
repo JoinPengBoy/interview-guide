@@ -111,9 +111,9 @@ export const request = {
    * 文件上传
    */
   upload<T>(url: string, formData: FormData, config?: AxiosRequestConfig): Promise<T> {
+    // 不手动设置 Content-Type，让 Axios 自动添加正确的 boundary 参数
     return instance.post(url, formData, {
       timeout: 300000, // 5分钟，与Nginx proxy_read_timeout对齐
-      headers: { 'Content-Type': 'multipart/form-data' },
       ...config,
     }).then(res => res.data);
   },

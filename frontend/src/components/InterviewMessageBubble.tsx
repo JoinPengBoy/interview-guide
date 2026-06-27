@@ -41,7 +41,7 @@ export default function InterviewMessageBubble({
             )}
           </div>
           <div
-            className={`rounded-2xl rounded-tl-none p-4 leading-relaxed ${
+            className={`rounded-2xl rounded-tl-none p-4 leading-relaxed whitespace-pre-wrap ${
               highlight
                 ? 'bg-slate-100 dark:bg-slate-700 border border-primary-300/60 dark:border-primary-700/40 text-slate-700 dark:text-slate-200'
                 : 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200'
@@ -63,7 +63,7 @@ export default function InterviewMessageBubble({
     >
       <div className="flex-1 max-w-[80%]">
         <div
-          className={`rounded-2xl rounded-tr-none p-4 leading-relaxed bg-primary-500 text-white ${
+          className={`rounded-2xl rounded-tr-none p-4 leading-relaxed bg-primary-500 text-white whitespace-pre-wrap ${
             highlight ? 'border border-primary-400/70 bg-primary-500/90' : ''
           } ${italic ? 'italic' : ''}`}
         >

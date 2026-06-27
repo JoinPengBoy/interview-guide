@@ -584,26 +584,38 @@ export default function KnowledgeBaseQueryPage({ onBack, onUpload }: KnowledgeBa
 
                 {/* 输入区域 */}
                 <div className="p-4 border-t border-slate-200 dark:border-slate-600">
-                  <div className="flex gap-3">
-                    <input
-                      type="text"
+                  <div className="flex gap-3 items-end">
+                    <textarea
                       value={question}
                       onChange={(e) => setQuestion(e.target.value)}
-                      onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmitQuestion()}
-                      placeholder="输入您的问题..."
-                      className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400"
+                      onKeyDown={(e) => {
+                        // Enter 发送（不按 Shift），Shift+Enter 换行
+                        if (e.key === 'Enter' && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSubmitQuestion();
+                        }
+                      }}
+                      placeholder="输入您的问题... Shift+Enter 换行"
+                      rows={1}
+                      className="flex-1 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl 
+                        focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent 
+                        text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white 
+                        placeholder-slate-400 resize-none"
                       disabled={loading}
                     />
                     <motion.button
                       onClick={handleSubmitQuestion}
                       disabled={!question.trim() || selectedKbIds.size === 0 || loading}
-                      className="px-5 py-2.5 bg-primary-500 text-white rounded-xl font-medium hover:bg-primary-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                      className="px-5 py-2.5 bg-primary-500 text-white rounded-xl font-medium 
+                        hover:bg-primary-600 transition-all disabled:opacity-50 
+                        disabled:cursor-not-allowed text-sm flex-shrink-0"
                       whileHover={{ scale: loading ? 1 : 1.02 }}
                       whileTap={{ scale: loading ? 1 : 0.98 }}
                     >
                       发送
                     </motion.button>
                   </div>
+                  <p className="text-xs text-slate-400 mt-1.5 ml-1">Enter 发送，Shift+Enter 换行</p>
                 </div>
               </>
             ) : (

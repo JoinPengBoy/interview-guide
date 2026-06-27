@@ -132,14 +132,14 @@ public class ResumePersistenceService {
     
     /**
      * 获取当前用户的简历列表
-     * 未登录时返回所有简历（向后兼容）
+     * 未登录时返回空列表（防止泄露其他用户的数据）
      */
     public List<ResumeEntity> findAllResumes() {
         Long userId = CurrentUser.getUserId();
         if (userId != null) {
             return resumeRepository.findByUserIdOrderByUploadedAtDesc(userId);
         }
-        return resumeRepository.findAll();
+        return List.of();
     }
     
     /**

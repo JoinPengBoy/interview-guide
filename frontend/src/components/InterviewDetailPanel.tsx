@@ -50,6 +50,8 @@ export default function InterviewDetailPanel({ interview }: InterviewDetailPanel
         <ScoreCard
         score={interview.overallScore}
         feedback={interview.overallFeedback}
+        evaluateStatus={interview.evaluateStatus}
+        evaluateError={interview.evaluateError}
         scorePercent={scorePercent}
         circumference={circumference}
         strokeDashoffset={strokeDashoffset}
@@ -75,22 +77,59 @@ export default function InterviewDetailPanel({ interview }: InterviewDetailPanel
   );
 }
 
+/** 根据分数获取默认评语 */
+function getDefaultFeedback(score: number): string {
+  if (score >= 80) return '表现优秀，展现了扎实的技术基础和深度思考能力。';
+  if (score >= 70) return '表现良好，基础较扎实，部分领域可进一步提升。';
+  if (score >= 60) return '表现一般，需要加强基础知识的学习和积累。';
+  return '需要加强，建议从基础开始系统学习，多做练习巩固。';
+}
+
+/** 根据评估状态获取提示文案 */
+type EvaluateStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED' | undefined;
+
+function getStatusMessage(evaluateStatus: EvaluateStatus, evaluateError?: string): string {
+  switch (evaluateStatus) {
+    case 'PENDING':
+      return '评估任务已提交，正在等待处理...';
+    case 'PROCESSING':
+      return '正在评估您的面试回答，请稍候...';
+    case 'FAILED':
+      return `评估失败：${evaluateError || '未知错误，请联系管理员'}`;
+    default:
+      return '面试正在进行中，完成所有问题后将生成评估报告。';
+  }
+}
+
 // 评分卡片组件
 function ScoreCard({
   score,
   feedback,
+  evaluateStatus,
+  evaluateError,
   // scorePercent, // 暂时未使用
   circumference,
   strokeDashoffset
 }: {
   score: number | null;
   feedback: string | null;
+  evaluateStatus?: EvaluateStatus;
+  evaluateError?: string;
   scorePercent: number;
   circumference: number;
   strokeDashoffset: number;
 }) {
+  // 根据分数和状态确定显示的评论文本
+  const feedbackText = score !== null
+    ? feedback ?? getDefaultFeedback(score)
+    : getStatusMessage(evaluateStatus, evaluateError);
+
   return (
-    <div className="bg-gradient-to-br from-primary-600 via-primary-600 to-primary-700 rounded-2xl p-8 text-white">
+    <div className={`bg-gradient-to-br rounded-2xl p-8 text-white ${
+      score !== null
+        ? 'from-primary-600 via-primary-600 to-primary-700'
+        : 'from-slate-500 via-slate-500 to-slate-600'
+    }`}>
       <div className="flex flex-col items-center text-center">
         {/* 圆环进度条 */}
         <div className="relative w-32 h-32 mb-6">
@@ -132,7 +171,7 @@ function ScoreCard({
 
         <h3 className="text-2xl font-bold mb-3">面试评估</h3>
         <p className="text-white/90 max-w-2xl leading-relaxed">
-          {feedback || '表现良好，展示了扎实的技术基础。'}
+          {feedbackText}
         </p>
       </div>
     </div>

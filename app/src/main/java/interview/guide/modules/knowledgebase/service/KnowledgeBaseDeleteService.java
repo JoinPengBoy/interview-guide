@@ -1,5 +1,6 @@
 package interview.guide.modules.knowledgebase.service;
 
+import interview.guide.common.auth.CurrentUser;
 import interview.guide.common.exception.BusinessException;
 import interview.guide.common.exception.ErrorCode;
 import interview.guide.infrastructure.file.FileStorageService;
@@ -34,8 +35,12 @@ public class KnowledgeBaseDeleteService {
      */
     @Transactional(rollbackFor = Exception.class)
     public void deleteKnowledgeBase(Long id) {
-        // 1. 获取知识库信息
+        // 1. 获取知识库信息并校验归属
         KnowledgeBaseEntity kb = knowledgeBaseRepository.findById(id)
+            .filter(k -> {
+                Long userId = CurrentUser.getUserId();
+                return userId == null || k.getUserId() == null || k.getUserId().equals(userId);
+            })
             .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "知识库不存在"));
         
         // 2. 删除所有RAG会话中的知识库关联（必须先删除关联，否则外键约束会阻止删除）
