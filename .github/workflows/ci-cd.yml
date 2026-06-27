@@ -66,15 +66,17 @@ jobs:
           cache: 'gradle'
 
       - name: 🧪 后端单元测试
-        run: ./gradlew :app:test --no-daemon
+        run: |
+          chmod +x gradlew
+          ./gradlew clean :app:test --no-daemon --stacktrace
 
       - name: 📦 后端打包
         run: ./gradlew :app:bootJar --no-daemon -x test
 
-      - name: 🟢 安装 Node.js 20
+      - name: 🟢 安装 Node.js 22
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: 📦 安装前端依赖
         working-directory: ./frontend
