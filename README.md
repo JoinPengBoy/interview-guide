@@ -309,7 +309,7 @@ interview-guide/
 │   └── vite.config.ts
 │
 ├── docker-compose.yml                # 完整部署：前端 + 后端 + PostgreSQL + Redis + MinIO
-├── docker-compose.dev.yml            # 本地开发依赖：PostgreSQL + Redis + RustFS
+├── docker-compose.dev.yml            # 本地开发依赖：PostgreSQL + Redis + MinIO
 ├── docs/                             # 架构设计与改造记录
 ├── .env.example                      # 环境变量示例
 └── README.md
@@ -324,7 +324,7 @@ interview-guide/
 | JDK           | 21+  | 是   | 开发语言                                 |
 | Node.js       | 18+  | 是   | 前端构建                                 |
 | pnpm          | 10+  | 推荐 | 前端包管理器（项目 packageManager 指定 10.26）|
-| Docker        | -    | 推荐 | 一键启动依赖服务（PostgreSQL/Redis/RustFS）|
+| Docker        | -    | 推荐 | 一键启动依赖服务（PostgreSQL/Redis/MinIO）|
 
 > 如果不用 Docker，需要自行安装 PostgreSQL 14+（含 pgvector 扩展）、Redis 6+ 和 S3 兼容存储。
 
@@ -361,7 +361,7 @@ source ~/.bashrc
 
 ### 3. 启动依赖服务（可选）
 
-项目提供了 `docker-compose.dev.yml`，可一键启动 PostgreSQL、Redis、RustFS（S3 兼容存储）三个依赖：
+项目提供了 `docker-compose.dev.yml`，可一键启动 PostgreSQL、Redis、MinIO（S3 兼容存储）三个依赖：
 
 ```bash
 # 启动依赖服务
@@ -380,9 +380,9 @@ docker compose -f docker-compose.dev.yml down -v
 | ------------ | ---------------- | --------------- | --------------- |
 | PostgreSQL   | `localhost:5432` | `postgres`      | `123456`        |
 | Redis        | `localhost:6379` | -               | -               |
-| RustFS 控制台 | `localhost:9001` | `rustfsadmin`   | `rustfsadmin`   |
+| MinIO 控制台 | `localhost:9003` | `minioadmin`    | `minioadmin`    |
 
-> **注意**：首次启动后需浏览器访问 [http://localhost:9001](http://localhost:9001) 登录 RustFS 控制台，手动创建名为 `interview-guide` 的 Bucket。使用 `docker-compose.dev.yml` + `:app:bootRun` 时，请确保 `.env` 中的 `APP_STORAGE_ACCESS_KEY` / `APP_STORAGE_SECRET_KEY` 与 RustFS 账号一致，例如都设为 `rustfsadmin`。如果本地已有 MinIO 或其他 S3 兼容存储，也可以直接使用，在 `.env` 中修改 `APP_STORAGE_*` 配置即可。
+> **注意**：首次启动后 `createbuckets` 服务会自动创建名为 `interview-guide` 的 Bucket，无需手动操作。如需访问 MinIO 控制台，浏览器打开 [http://localhost:9003](http://localhost:9003) 登录。使用 `docker-compose.dev.yml` + `:app:bootRun` 时，请确保 `.env` 中的 `APP_STORAGE_ACCESS_KEY` / `APP_STORAGE_SECRET_KEY` 与 MinIO 账号一致，例如都设为 `minioadmin`。如果本地已有其他 S3 兼容存储，也可以直接使用，在 `.env` 中修改 `APP_STORAGE_*` 配置即可。
 
 ### 4. 启动应用
 
@@ -462,8 +462,8 @@ docker-compose up -d --build
 | **前端应用**     | [http://localhost](http://localhost)           | -            | -            | 用户访问入口           |
 | **后端 API**     | [http://localhost:8080](http://localhost:8080) | -            | -            | RESTful API            |
 | **接口文档**     | [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html) | - | - | SpringDoc/Swagger UI |
-| **MinIO 控制台** | [http://localhost:9001](http://localhost:9001) | `minioadmin` | `minioadmin` | 对象存储管理           |
-| **MinIO API**    | `localhost:9000`                               | -            | -            | S3 兼容接口            |
+| **MinIO 控制台** | [http://localhost:9003](http://localhost:9003) | `minioadmin` | `minioadmin` | 对象存储管理           |
+| **MinIO API**    | `localhost:9002`                               | -            | -            | S3 兼容接口            |
 | **PostgreSQL**   | `localhost:5432`                               | `postgres`   | `password`   | 数据库 (包含 pgvector) |
 | **Redis**        | `localhost:6379`                               | -            | -            | 缓存与消息队列         |
 
